@@ -48,7 +48,7 @@ const Sell = () => {
       <Container
         maxW="8xl"
         py={{ base: 8, md: 12, xl: 20 }}
-        px={{ base: 4, lg: 10 }}
+        px={{ base: 4, lg: 2 }}
       >
         <Flex
           direction={{ base: "column", xl: "row" }}
@@ -165,7 +165,8 @@ const Sell = () => {
             w="full"
             bg="#222222"
             maxW="100%"
-            px={{ base: 2, sm: 4, md: 6 }}
+            px={{ base: 2, sm: 4 }}
+            className="!pr-2"
           >
             <Stack spacing={8} width="100%">
               <Heading

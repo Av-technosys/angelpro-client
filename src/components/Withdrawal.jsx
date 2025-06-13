@@ -22,17 +22,22 @@ const WithdrawalForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
+    if(user.balance >= withdrawalAmount){
+      try {
       const response = await axiosClient.post("/transaction/withdrawal", {
         currency,
         withdrawalAmount,
         network,
         walletAddress,
       });
+      console.log(response)
       alert("Withdrawal created successfully");
     } catch (error) {
       console.error("Failed to create withdrawal", error);
       alert("Failed to create withdrawal");
+    }
+    }else{
+       alert("Failed to create withdrawal, Your Balance is too low...");
     }
   };
 

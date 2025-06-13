@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { axiosClient } from "../utils/axiosClient";
 import { useNavigate } from "react-router-dom";
+
 
 const AdminPanel = () => {
   const [users, setUsers] = useState([]);
@@ -9,8 +10,11 @@ const AdminPanel = () => {
   const [userbankdetails, setuserbankdetails] = useState([]);
   const [usersellusdts, setusersellusdts] = useState([]);
   const [expandedUserId, setExpandedUserId] = useState(null);
+  const [usdtPrice,setusdtPrice]=useState([])
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const inputref = useRef();
+
   useEffect(() => {
     const localStorage = window.localStorage;
     if (!localStorage.getItem("access_token")) {
@@ -60,11 +64,10 @@ const AdminPanel = () => {
       );
 
       console.log("personID", personid);
-      setDeposites(response.result);
+      setDeposites(response?.result);
       setWithdrawl(withdrawalresponse?.result);
       setuserbankdetails(userbankdetailsresponse?.result);
       setusersellusdts(usersellusdtsdetailsresponse?.result);
-      console.log("Usersellusdtsdetails", usersellusdtsdetailsresponse.result);
     } catch (error) {
       // console.error("Error fetching userDeposites:", error);
       setError("Failed to fetch userDeposites. Please try again.");
@@ -240,6 +243,26 @@ const AdminPanel = () => {
     setExpandedUserId(expandedUserId === userId ? null : userId);
   };
 
+  const usdtpricechangehandler = async (e) => {
+    const usdtpriceresponse = await axiosClient.post(
+      `/usdtPrice/create/${Number(inputref.current.value)}`
+    );
+
+    alert(usdtpriceresponse.result);
+    inputref.current.value = "";
+    console.log("usdtpriceresponse", usdtpriceresponse);
+  };
+
+  const fetchUsdtPrice = async () => {
+    const usdtPriceResponse = await axiosClient.get("/usdtPrice/getPrice");
+    console.log("usdtPriceResponse",usdtPriceResponse);
+    setusdtPrice(usdtPriceResponse?.result);
+  };
+
+  useEffect(() => {
+    fetchUsdtPrice();
+  }, []);
+
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-100 p-4">
       <h1 className="text-4xl font-bold mb-4 text-blue-600">Admin Panel</h1>
@@ -247,6 +270,29 @@ const AdminPanel = () => {
         Manage all the user data including deposits and withdrawals from this
         panel. Click on a user to view more details.
       </p>
+      <div className="flex-col rounded-b-lg border bg-blue-50 shadow-lg my-3 w-full ">
+        <h1 className="bg-blue-600  rounded-t-lg  px-4 text-white font-bold py-2 text-2xl">
+          Usdt Price
+        </h1>
+        <div className="flex justify-center items-center gap-40 ">
+          <div className="text-md font-bold">Current UsdtPrice: ${usdtPrice}</div>
+          <div className="flex justify-center bg-blue-50 my-2">
+            <input
+              ref={inputref}
+              type="number"
+              color="white"
+              placeholder="Enter Your Usdt Price..."
+              className="py-2 px-2 text-black text-md outline-none"
+            />
+            <button
+              onClick={usdtpricechangehandler}
+              className="px-2 py-2 bg-blue-500 rounded-r-sm  text-white "
+            >
+              Change
+            </button>
+          </div>
+        </div>
+      </div>
       <div className="flex flex-col md:flex-row w-full">
         <div className=" w-full  lg:w-full bg-blue-600 shadow-lg rounded-lg overflow-auto mb-4 md:mb-0">
           <h2 className="text-2xl font-bold p-4 border-b bg-blue-600 text-white">

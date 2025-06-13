@@ -43,7 +43,7 @@ const Footer = () => {
               <Text fontSize="sm"> All rights reserved</Text>
             </Box>
           </Stack>
-          <Stack align={"flex-start"}>
+           <Stack align={"flex-start"}>
             <ListHeader>Product</ListHeader>
             <Box as="a" href={"#sell"}>
               Sell

@@ -3,12 +3,25 @@ import profileIcon from "../assets/profile.avif";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { axiosClient } from "../utils/axiosClient";
 function ExchangePage() {
   const user = useSelector((state) => state.appConfigReducer.userData);
+  const [usdtPrice,setusdtPrice]=useState([])
+  const fetchUsdtPrice = async () => {
+      const usdtPriceResponse = await axiosClient.get("/usdtPrice/getPrice");
+      console.log("usdtPriceResponse",usdtPriceResponse);
+      setusdtPrice(usdtPriceResponse?.result);
+      console.log(usdtPriceResponse.result)
+    };
+  
+    useEffect(() => {
+      fetchUsdtPrice();
+    }, []);
 
   const navigate = useNavigate();
   return (
-    <div className="min-h-screen bg-gray-100 p-4 sm:p-6 md:p-8">
+    <div className="min-h-screen bg-gray-100 sm:p-6 ">
       {/* User Profile Section */}
       <div className="flex items-center justify-between p-2 bg-gray-800 shadow-lg rounded-lg mb-2 sm:mb-4">
         <div className="flex items-center p-4">
@@ -49,8 +62,8 @@ function ExchangePage() {
 
         <div className="flex justify-center">
           <div className="mt-4 border border-white p-4 rounded-lg sm:max-w-60 lg:max-w-[300px]">
-            <h3 className="text-8xl font-bold text-gray-800 flex justify-center">
-              93{" "}
+            <h3 className="lg:text-8xl text-4xl font-bold text-gray-800 flex justify-center">
+              {usdtPrice}{" "}
               <span className="font-semibold flex items-end">
                 {" "}
                 <p className="bg-red-600 text-sm px-2 rounded-lg py-[0.5px] text-white">
@@ -59,14 +72,14 @@ function ExchangePage() {
               </span>
             </h3>
             <div className="text-gray-600 p-2 font-bold flex justify-center text-xl">
-              <p>1 USDT = ₹93</p>
+              <p>1 USDT = ₹{usdtPrice}</p>
             </div>
           </div>
         </div>
 
-        <div className="mt-4 px-4 flex justify-center">
-          <div className="w-full bg-gradient-to-b from-orange-300 to-orange-100 p-6 rounded-xl shadow-xl">
-            <table className="w-full text-center border-collapse bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="mt-4 w-full px-4 flex justify-center">
+          <div className="lg:w-full   bg-gradient-to-b from-orange-300 to-orange-100 p-6 rounded-xl shadow-xl">
+            <table className="lg:w-full w-[250px] text-center border-collapse bg-white rounded-lg shadow-md overflow-hidden">
               <thead>
                 <tr>
                   <th className="border-b-2  border-gray-400 p-4  text-gray-800 bg-gray-200 font-semibold rounded-tl-lg ">
@@ -83,7 +96,7 @@ function ExchangePage() {
                     1075.27 and 2150.54
                   </td>
                   <td className="border-b border-gray-300 p-4 text-gray-800">
-                    93 <span className="text-red-600">+0.25</span>
+                    {usdtPrice} <span className="text-red-600">+0.25</span>
                   </td>
                 </tr>
                 <tr className="hover:bg-gray-50 transition-colors duration-200">
@@ -91,7 +104,7 @@ function ExchangePage() {
                     2150.54 and 3225.81
                   </td>
                   <td className="border-b border-gray-300 p-4 text-gray-800">
-                    93 <span className="text-red-600">+0.5</span>
+                    {usdtPrice} <span className="text-red-600">+0.5</span>
                   </td>
                 </tr>
                 <tr className="hover:bg-gray-50 transition-colors duration-200">
@@ -99,7 +112,7 @@ function ExchangePage() {
                     3225.81
                   </td>
                   <td className="border-b border-gray-300 p-4 text-gray-800">
-                    93 <span className="text-red-600">+1</span>
+                    {usdtPrice} <span className="text-red-600">+1</span>
                   </td>
                 </tr>
               </tbody>
@@ -129,7 +142,7 @@ function ExchangePage() {
             <h3 className="text-lg font-bold text-gray-800 mb-4">WazirX</h3>
             <p className="text-gray-600 mb-2 font-bold text-lg">
               Avg{" "}
-              <span className="text-orange-600 text-6xl font-bold">95.26₹</span>
+              <span className="text-orange-600 lg:text-6xl text-2xl font-bold">95.26₹</span>
             </p>
             <p className="text-gray-600">
               1 USDT = <span className="font-bold">₹95.26</span>
@@ -140,7 +153,7 @@ function ExchangePage() {
             <h3 className="text-lg font-bold text-gray-800 mb-4">Binance</h3>
             <p className="text-gray-600 mb-2 font-bold text-lg">
               Avg{" "}
-              <span className="text-orange-600 text-6xl font-bold">91.14₹</span>
+              <span className="text-orange-600 lg:text-6xl text-2xl font-bold">91.14₹</span>
             </p>
             <p className="text-gray-600">
               1 USDT = <span className="font-bold">₹91.14</span>

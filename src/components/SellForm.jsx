@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { userBankAcoounts } from "../redux/slices/appConfigSlice";
 import { axiosClient } from "../utils/axiosClient";
+import { useSelector } from "react-redux";
 
 const SellForm = () => {
   const navigate = useNavigate();
@@ -14,6 +15,20 @@ const SellForm = () => {
   const dispatch = useDispatch();
   const [bankAccounts, setBankAccounts] = useState(null);
   const { bankAccountNumber, bankHolderName, ifscCode } = selectedAccount;
+   const user = useSelector((state) => state.appConfigReducer.userData);
+
+   const [usdtPrice,setusdtPrice]=useState([])
+  const fetchUsdtPrice = async () => {
+      const usdtPriceResponse = await axiosClient.get("/usdtPrice/getPrice");
+      console.log("usdtPriceResponse",usdtPriceResponse);
+      setusdtPrice(usdtPriceResponse?.result);
+      console.log(usdtPriceResponse.result)
+    };
+  
+    useEffect(() => {
+      fetchUsdtPrice();
+    }, []);
+
 
   useEffect(() => {
     const fetchWithdrawalHistory = async () => {
@@ -36,20 +51,21 @@ const SellForm = () => {
 
   const calculateINR = (usdt) => {
     if (usdt >= 1086.96 && usdt < 2173.92) {
-      return usdt * (93 + 0.25);
+      return usdt * ({usdtPrice} + 0.25);
     } else if (usdt >= 2173.92 && usdt < 3260.87) {
-      return usdt * (93 + 0.5);
+      return usdt * ({usdtPrice} + 0.5);
     } else if (usdt >= 3260.87) {
-      return usdt * (93 + 1);
+      return usdt * ({usdtPrice} + 1);
     }
-    return usdt * 92;
+    return usdt * usdtPrice;
   };
   useEffect(() => {
     setCalculatedINR(calculateINR(Number(sellAmount)));
   }, [sellAmount]);
 
   const handleSubmit = () => {
-    try {
+   if(user.balance >= sellAmount){
+     try {
       const fetchSellUsdt = async () => {
         const response = await axiosClient.post("/transaction/sellusdt", {
           bankHolderName,
@@ -69,6 +85,9 @@ const SellForm = () => {
       console.log(e);
       alert("Failed to sell usdt .");
     }
+   }else{
+    alert("Failed to sell usdt because your balance is low...");
+   }
   };
 
   return (
@@ -165,7 +184,7 @@ const SellForm = () => {
           </div>
           <div className="w-full flex justify-between">
             <p className="text-sm text-gray-500  mt-2">
-              <strong>Available: {currentUSDTBalance} USDT</strong>
+              <strong>Available: {user?.balance}$ USDT</strong>
             </p>
             <p className="mt-2 text-sm font-bold text-right">
               ₹{calculatedINR.toFixed(2)}
@@ -192,7 +211,7 @@ const SellForm = () => {
                     1075.27 and 2150.54
                   </td>
                   <td className="border-b border-gray-300 p-4 text-gray-800">
-                    93 <span className="text-red-600">+0.25</span>
+                    {usdtPrice} <span className="text-red-600">+0.25</span>
                   </td>
                 </tr>
                 <tr className="hover:bg-gray-50 transition-colors duration-200">
@@ -200,7 +219,7 @@ const SellForm = () => {
                     2150.54 and 3225.81
                   </td>
                   <td className="border-b border-gray-300 p-4 text-gray-800">
-                    93 <span className="text-red-600">+0.5</span>
+                    {usdtPrice} <span className="text-red-600">+0.5</span>
                   </td>
                 </tr>
                 <tr className="hover:bg-gray-50 transition-colors duration-200">
@@ -208,7 +227,7 @@ const SellForm = () => {
                     3225.81
                   </td>
                   <td className="border-b border-gray-300 p-4 text-gray-800">
-                    93 <span className="text-red-600">+1</span>
+                    {usdtPrice} <span className="text-red-600">+1</span>
                   </td>
                 </tr>
               </tbody>
